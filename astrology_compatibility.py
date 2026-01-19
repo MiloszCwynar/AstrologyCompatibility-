@@ -12,6 +12,17 @@ from typing import Tuple
 import math
 
 
+# Constants for magnetic signature calculations
+LUNAR_CYCLE_DAYS = 29.53  # Average lunar cycle length in days
+SOLAR_YEAR_DAYS = 365.25  # Average solar year length in days
+SOLAR_WEIGHT = 0.6  # Weight of solar influence in magnetic signature
+LUNAR_WEIGHT = 0.4  # Weight of lunar influence in magnetic signature
+
+# Constants for compatibility calculations
+MAX_YEAR_DIFF_FOR_RESONANCE = 10  # Maximum year difference to consider for resonance
+RESONANCE_BOOST_FACTOR = 100  # Divisor for resonance factor calculation
+
+
 class Person:
     """Represents a person with their birth date information."""
     
@@ -41,16 +52,15 @@ class Person:
         # Day of year (1-366)
         day_of_year = self.birth_date.timetuple().tm_yday
         
-        # Lunar cycle approximation (29.53 days)
-        lunar_cycle = 29.53
-        lunar_position = (day_of_year % lunar_cycle) / lunar_cycle * 360
+        # Lunar position based on cycle
+        lunar_position = (day_of_year % LUNAR_CYCLE_DAYS) / LUNAR_CYCLE_DAYS * 360
         
         # Solar position in year
-        solar_position = (day_of_year / 365.25) * 360
+        solar_position = (day_of_year / SOLAR_YEAR_DAYS) * 360
         
         # Combine influences - weighted average
         # The pineal gland's magnetic particles align based on these cosmic influences
-        magnetic_signature = (solar_position * 0.6 + lunar_position * 0.4) % 360
+        magnetic_signature = (solar_position * SOLAR_WEIGHT + lunar_position * LUNAR_WEIGHT) % 360
         
         return magnetic_signature
     
@@ -100,7 +110,7 @@ class CompatibilityCalculator:
         
         # Apply resonance factor based on birth year proximity
         year_diff = abs(person1.birth_date.year - person2.birth_date.year)
-        resonance_factor = 1.0 + (min(year_diff, 10) / 100)  # Small boost for similar ages
+        resonance_factor = 1.0 + (min(year_diff, MAX_YEAR_DIFF_FOR_RESONANCE) / RESONANCE_BOOST_FACTOR)  # Small boost for similar ages
         
         compatibility_score = min(100, base_compatibility * resonance_factor)
         
